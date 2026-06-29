@@ -13,6 +13,7 @@ import StudentProfile from "@/pages/students/profile";
 import EditStudent from "@/pages/students/edit-student";
 import NotFound from "@/pages/not-found";
 import { StudentsProvider } from "@/context/students-context";
+import { WorkoutsProvider } from "@/context/workouts-context";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -44,11 +45,13 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <StudentsProvider>
-          <WouterRouter>
-            <Router />
-          </WouterRouter>
-          <Toaster />
-          <SonnerToaster position="top-right" richColors />
+          <WorkoutsProvider>
+            <WouterRouter>
+              <Router />
+            </WouterRouter>
+            <Toaster />
+            <SonnerToaster position="top-right" richColors />
+          </WorkoutsProvider>
         </StudentsProvider>
       </TooltipProvider>
     </QueryClientProvider>
