@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useLocation, useParams } from "wouter";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Library } from "lucide-react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { FormCard } from "@/components/forms/form-card";
 import { FormField } from "@/components/forms/form-field";
 import { useWorkouts } from "@/context/workouts-context";
 import { useStudents } from "@/context/students-context";
+import { useLibrary } from "@/context/library-context";
 import { toast } from "sonner";
 import type { Exercise } from "@/types";
 
@@ -48,6 +49,7 @@ export default function NewWorkout() {
 
   const { addWorkout } = useWorkouts();
   const { students } = useStudents();
+  const { exercises: libraryExercises } = useLibrary();
 
   const preselectedStudent = students.find(
     (s) => s.id === preselectedStudentId,
@@ -62,6 +64,9 @@ export default function NewWorkout() {
 
   const [exercicios, setExercicios] = useState<Exercise[]>([newExercise()]);
   const [submitted, setSubmitted] = useState(false);
+
+  // Controla, por exercício, se o seletor de Biblioteca está aberto
+  const [openPickerFor, setOpenPickerFor] = useState<string | null>(null);
 
   const errors = validate(form);
   const hasErrors = Object.values(errors).some(Boolean);
@@ -88,6 +93,16 @@ export default function NewWorkout() {
   const removeExercise = (index: number) => {
     if (exercicios.length === 1) return;
     setExercicios((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Preenche o exercício a partir de um item da Biblioteca
+  const pickFromLibrary = (index: number, libraryId: string) => {
+    const libEx = libraryExercises.find((e) => e.id === libraryId);
+    if (!libEx) return;
+    setExercicios((prev) =>
+      prev.map((ex, i) => (i === index ? { ...ex, nome: libEx.nome } : ex)),
+    );
+    setOpenPickerFor(null);
   };
 
   const handleSubmit = () => {
@@ -277,13 +292,56 @@ export default function NewWorkout() {
                   )}
                 </div>
 
-                <input
-                  type="text"
-                  placeholder="Nome do exercício (ex: Supino Reto)"
-                  value={ex.nome}
-                  onChange={(e) => setExercise(i, "nome", e.target.value)}
-                  className="ls-input"
-                />
+                {/* Nome + botão Biblioteca */}
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Nome do exercício (ex: Supino Reto)"
+                      value={ex.nome}
+                      onChange={(e) => setExercise(i, "nome", e.target.value)}
+                      className="ls-input flex-1"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenPickerFor(openPickerFor === ex.id ? null : ex.id)
+                      }
+                      title="Escolher da Biblioteca"
+                      className="h-10 px-3 flex items-center gap-1.5 rounded-xl border border-border text-xs font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer flex-shrink-0 min-h-0"
+                    >
+                      <Library className="w-3.5 h-3.5" strokeWidth={1.75} />
+                      Biblioteca
+                    </button>
+                  </div>
+
+                  {/* Seletor da Biblioteca (abre/fecha) */}
+                  {openPickerFor === ex.id && (
+                    <div className="rounded-xl border border-border bg-surface p-3 max-h-48 overflow-y-auto flex flex-col gap-1 animate-ls-slide-up">
+                      {libraryExercises.length === 0 ? (
+                        <p className="text-xs text-muted-foreground px-1 py-2">
+                          Nenhum exercício cadastrado na Biblioteca ainda.
+                        </p>
+                      ) : (
+                        libraryExercises.map((libEx) => (
+                          <button
+                            key={libEx.id}
+                            type="button"
+                            onClick={() => pickFromLibrary(i, libEx.id)}
+                            className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-left hover:bg-white transition-colors cursor-pointer"
+                          >
+                            <span className="text-sm text-foreground font-medium">
+                              {libEx.nome}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground bg-white border border-border px-2 py-0.5 rounded-full flex-shrink-0">
+                              {libEx.grupoMuscular}
+                            </span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="flex flex-col gap-1.5">

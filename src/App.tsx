@@ -16,6 +16,7 @@ import WorkoutView from "@/pages/workouts/view";
 import NewWorkout from "@/pages/workouts/new";
 import WorkoutsByStudent from "@/pages/workouts/by-student";
 import LibraryList from "@/pages/Library/list";
+import NewLibraryExercise from "@/pages/Library/new";
 import NotFound from "@/pages/not-found";
 import { StudentsProvider } from "@/context/students-context";
 import { WorkoutsProvider } from "@/context/workouts-context";
@@ -46,6 +47,7 @@ function Router() {
       <Route path="/workouts" component={WorkoutsList} />
       <Route path="/workouts/new" component={NewWorkout} />
       <Route path="/workouts/:id" component={WorkoutView} />
+      <Route path="/library/new" component={NewLibraryExercise} />
       <Route path="/library" component={LibraryList} />
       <Route component={NotFound} />
     </Switch>
