@@ -13,6 +13,7 @@ import StudentProfile from "@/pages/students/profile";
 import EditStudent from "@/pages/students/edit-student";
 import WorkoutsList from "@/pages/workouts/list";
 import WorkoutView from "@/pages/workouts/view";
+import NewWorkout from "@/pages/workouts/new";
 import NotFound from "@/pages/not-found";
 import { StudentsProvider } from "@/context/students-context";
 import { WorkoutsProvider } from "@/context/workouts-context";
@@ -38,6 +39,7 @@ function Router() {
       <Route path="/students/:id/edit" component={EditStudent} />
       <Route path="/students/:id" component={StudentProfile} />
       <Route path="/workouts" component={WorkoutsList} />
+      <Route path="/workouts/new" component={NewWorkout} />
       <Route path="/workouts/:id" component={WorkoutView} />
       <Route component={NotFound} />
     </Switch>
