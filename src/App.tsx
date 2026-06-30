@@ -11,6 +11,8 @@ import StudentsList from "@/pages/students/list";
 import NewStudent from "@/pages/students/new-student";
 import StudentProfile from "@/pages/students/profile";
 import EditStudent from "@/pages/students/edit-student";
+import StudentAssessments from "@/pages/students/assessments";
+import NewAssessment from "@/pages/students/new-assessment";
 import WorkoutsList from "@/pages/workouts/list";
 import WorkoutView from "@/pages/workouts/view";
 import NewWorkout from "@/pages/workouts/new";
@@ -21,6 +23,7 @@ import NotFound from "@/pages/not-found";
 import { StudentsProvider } from "@/context/students-context";
 import { WorkoutsProvider } from "@/context/workouts-context";
 import { LibraryProvider } from "@/context/library-context";
+import { AssessmentsProvider } from "@/context/assessments-context";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +46,8 @@ function Router() {
       <Route path="/students/:id/edit" component={EditStudent} />
       <Route path="/students/:id/workouts/new" component={NewWorkout} />
       <Route path="/students/:id/workouts" component={WorkoutsByStudent} />
+      <Route path="/students/:id/assessments/new" component={NewAssessment} />
+      <Route path="/students/:id/assessments" component={StudentAssessments} />
       <Route path="/students/:id" component={StudentProfile} />
       <Route path="/workouts" component={WorkoutsList} />
       <Route path="/workouts/new" component={NewWorkout} />
@@ -61,11 +66,15 @@ export default function App() {
         <StudentsProvider>
           <WorkoutsProvider>
             <LibraryProvider>
-              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-                <Router />
-              </WouterRouter>
-              <Toaster />
-              <SonnerToaster position="top-right" richColors />
+              <AssessmentsProvider>
+                <WouterRouter
+                  base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+                >
+                  <Router />
+                </WouterRouter>
+                <Toaster />
+                <SonnerToaster position="top-right" richColors />
+              </AssessmentsProvider>
             </LibraryProvider>
           </WorkoutsProvider>
         </StudentsProvider>

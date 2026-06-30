@@ -60,8 +60,48 @@ export function getBreadcrumbs(location: string): BreadcrumbItem[] {
       { label: "Editar" },
     ];
 
-  const profileMatch = location.match(/^\/students\/[^/]+$/);
+  const profileMatch = location.match(/^\/students\/([^/]+)$/);
   if (profileMatch) return [dash, alunos, { label: "Perfil" }];
+
+  const workoutsMatch = location.match(/^\/students\/([^/]+)\/workouts$/);
+  if (workoutsMatch)
+    return [
+      dash,
+      alunos,
+      { label: "Perfil", href: `/students/${workoutsMatch[1]}` },
+      { label: "Treinos" },
+    ];
+
+  const newWorkoutMatch = location.match(
+    /^\/students\/([^/]+)\/workouts\/new$/,
+  );
+  if (newWorkoutMatch)
+    return [
+      dash,
+      alunos,
+      { label: "Perfil", href: `/students/${newWorkoutMatch[1]}` },
+      { label: "Novo Treino" },
+    ];
+
+  const assessmentsMatch = location.match(/^\/students\/([^/]+)\/assessments$/);
+  if (assessmentsMatch)
+    return [
+      dash,
+      alunos,
+      { label: "Perfil", href: `/students/${assessmentsMatch[1]}` },
+      { label: "Evolução" },
+    ];
+
+  const newAssessmentMatch = location.match(
+    /^\/students\/([^/]+)\/assessments\/new$/,
+  );
+  if (newAssessmentMatch)
+    return [
+      dash,
+      alunos,
+      { label: "Perfil", href: `/students/${newAssessmentMatch[1]}` },
+      { label: "Nova Avaliação" },
+    ];
 
   const workoutMatch = location.match(/^\/workouts\/([^/]+)$/);
   if (workoutMatch) return [dash, treinos, { label: "Treino" }];

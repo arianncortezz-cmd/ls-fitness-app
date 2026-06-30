@@ -66,7 +66,11 @@ export default function StudentProfile() {
       label: "Treinos",
       href: `/students/${student.id}/workouts`,
     },
-    { icon: TrendingUp, label: "Evolução", href: null },
+    {
+      icon: TrendingUp,
+      label: "Evolução",
+      href: `/students/${student.id}/assessments`,
+    },
     { icon: Image, label: "Fotos", href: null },
     { icon: Utensils, label: "Dieta", href: null },
     { icon: History, label: "Histórico", href: null },
