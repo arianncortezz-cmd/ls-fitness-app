@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 import { Plus, Trash2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { FormCard } from "@/components/forms/form-card";
@@ -9,20 +9,16 @@ import { useStudents } from "@/context/students-context";
 import { toast } from "sonner";
 import type { Exercise } from "@/types";
 
-// ─── Exercício em branco ──────────────────────────────────────────────────────
-
 function newExercise(): Exercise {
   return {
-    id:          String(Date.now() + Math.random()),
-    nome:        "",
-    series:      3,
-    repeticoes:  "12",
-    descanso:    "60s",
+    id: String(Date.now() + Math.random()),
+    nome: "",
+    series: 3,
+    repeticoes: "12",
+    descanso: "60s",
     observacoes: "",
   };
 }
-
-// ─── Validação ────────────────────────────────────────────────────────────────
 
 type FormErrors = {
   nome: string;
@@ -31,27 +27,37 @@ type FormErrors = {
   studentId: string;
 };
 
-function validate(form: { nome: string; divisao: string; tipo: string; studentId: string }): FormErrors {
+function validate(form: {
+  nome: string;
+  divisao: string;
+  tipo: string;
+  studentId: string;
+}): FormErrors {
   return {
-    nome:      !form.nome.trim()      ? "Nome do treino é obrigatório."  : "",
-    divisao:   !form.divisao.trim()   ? "Divisão é obrigatória."         : "",
-    tipo:      !form.tipo             ? "Selecione o tipo de treino."     : "",
-    studentId: !form.studentId        ? "Selecione uma aluna."           : "",
+    nome: !form.nome.trim() ? "Nome do treino é obrigatório." : "",
+    divisao: !form.divisao.trim() ? "Divisão é obrigatória." : "",
+    tipo: !form.tipo ? "Selecione o tipo de treino." : "",
+    studentId: !form.studentId ? "Selecione uma aluna." : "",
   };
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function NewWorkout() {
   const [, navigate] = useLocation();
+  const params = useParams<{ id?: string }>();
+  const preselectedStudentId = params.id ?? "";
+
   const { addWorkout } = useWorkouts();
   const { students } = useStudents();
 
+  const preselectedStudent = students.find(
+    (s) => s.id === preselectedStudentId,
+  );
+
   const [form, setForm] = useState({
-    nome:      "",
-    divisao:   "",
-    tipo:      "",
-    studentId: "",
+    nome: "",
+    divisao: "",
+    tipo: "",
+    studentId: preselectedStudentId,
   });
 
   const [exercicios, setExercicios] = useState<Exercise[]>([newExercise()]);
@@ -60,19 +66,18 @@ export default function NewWorkout() {
   const errors = validate(form);
   const hasErrors = Object.values(errors).some(Boolean);
 
-  const set = (field: keyof typeof form) =>
+  const set =
+    (field: keyof typeof form) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((f) => ({ ...f, [field]: e.target.value }));
-
-  // ─── Exercícios ─────────────────────────────────────────────────────────────
 
   const setExercise = (
     index: number,
     field: keyof Exercise,
-    value: string | number
+    value: string | number,
   ) => {
     setExercicios((prev) =>
-      prev.map((ex, i) => (i === index ? { ...ex, [field]: value } : ex))
+      prev.map((ex, i) => (i === index ? { ...ex, [field]: value } : ex)),
     );
   };
 
@@ -85,8 +90,6 @@ export default function NewWorkout() {
     setExercicios((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ─── Submit ─────────────────────────────────────────────────────────────────
-
   const handleSubmit = () => {
     setSubmitted(true);
     if (hasErrors) return;
@@ -98,10 +101,10 @@ export default function NewWorkout() {
     }
 
     addWorkout({
-      nome:       form.nome.trim(),
-      divisao:    form.divisao.trim().toUpperCase(),
-      tipo:       form.tipo,
-      studentId:  form.studentId,
+      nome: form.nome.trim(),
+      divisao: form.divisao.trim().toUpperCase(),
+      tipo: form.tipo,
+      studentId: form.studentId,
       exercicios: exerciciosValidos,
     });
 
@@ -109,25 +112,49 @@ export default function NewWorkout() {
       description: `${form.nome.trim()} foi adicionado.`,
     });
 
-    navigate("/workouts");
+    if (preselectedStudentId) {
+      navigate(`/students/${preselectedStudentId}/workouts`);
+    } else {
+      navigate("/workouts");
+    }
+  };
+
+  const handleCancel = () => {
+    if (preselectedStudentId) {
+      navigate(`/students/${preselectedStudentId}/workouts`);
+    } else {
+      navigate("/workouts");
+    }
   };
 
   return (
     <AppLayout>
       <div className="px-6 py-7 max-w-3xl mx-auto flex flex-col gap-6">
-
-        {/* Header */}
         <div className="animate-ls-slide-up">
-          <h1 className="text-[1.375rem] font-bold text-foreground tracking-[-0.02em]">Novo Treino</h1>
-          <p className="text-sm text-muted-foreground mt-1">Monte o treino e vincule a uma aluna.</p>
+          <h1 className="text-[1.375rem] font-bold text-foreground tracking-[-0.02em]">
+            Novo Treino
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {preselectedStudent ? (
+              <>
+                Montando treino para <strong>{preselectedStudent.name}</strong>.
+              </>
+            ) : (
+              "Monte o treino e vincule a uma aluna."
+            )}
+          </p>
         </div>
 
-        {/* Card 1 — Informações do treino */}
         <FormCard title="Informações do Treino">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <FormField label="Nome do Treino" id="nome" required
-                error={errors.nome} showError={submitted && !!errors.nome}>
+              <FormField
+                label="Nome do Treino"
+                id="nome"
+                required
+                error={errors.nome}
+                showError={submitted && !!errors.nome}
+              >
                 <input
                   id="nome"
                   type="text"
@@ -138,8 +165,13 @@ export default function NewWorkout() {
                 />
               </FormField>
             </div>
-            <FormField label="Divisão" id="divisao" required
-              error={errors.divisao} showError={submitted && !!errors.divisao}>
+            <FormField
+              label="Divisão"
+              id="divisao"
+              required
+              error={errors.divisao}
+              showError={submitted && !!errors.divisao}
+            >
               <input
                 id="divisao"
                 type="text"
@@ -149,9 +181,19 @@ export default function NewWorkout() {
                 className="ls-input"
               />
             </FormField>
-            <FormField label="Tipo" id="tipo" required
-              error={errors.tipo} showError={submitted && !!errors.tipo}>
-              <select id="tipo" value={form.tipo} onChange={set("tipo")} className="ls-input">
+            <FormField
+              label="Tipo"
+              id="tipo"
+              required
+              error={errors.tipo}
+              showError={submitted && !!errors.tipo}
+            >
+              <select
+                id="tipo"
+                value={form.tipo}
+                onChange={set("tipo")}
+                className="ls-input"
+              >
                 <option value="">Selecione</option>
                 <option>Hipertrofia</option>
                 <option>Força</option>
@@ -161,28 +203,53 @@ export default function NewWorkout() {
                 <option>Misto</option>
               </select>
             </FormField>
+
             <div className="sm:col-span-2">
-              <FormField label="Aluna" id="studentId" required
-                error={errors.studentId} showError={submitted && !!errors.studentId}>
-                <select id="studentId" value={form.studentId} onChange={set("studentId")} className="ls-input">
-                  <option value="">Selecione uma aluna</option>
-                  {students
-                    .filter((s) => s.status === "Ativa")
-                    .map((s) => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                </select>
+              <FormField
+                label="Aluna"
+                id="studentId"
+                required
+                error={errors.studentId}
+                showError={submitted && !!errors.studentId}
+              >
+                {preselectedStudent ? (
+                  <div className="ls-input flex items-center bg-surface text-foreground font-medium cursor-not-allowed">
+                    {preselectedStudent.name}
+                  </div>
+                ) : (
+                  <select
+                    id="studentId"
+                    value={form.studentId}
+                    onChange={set("studentId")}
+                    className="ls-input"
+                  >
+                    <option value="">Selecione uma aluna</option>
+                    {students
+                      .filter((s) => s.status === "Ativa")
+                      .map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                  </select>
+                )}
               </FormField>
             </div>
           </div>
         </FormCard>
 
-        {/* Card 2 — Exercícios */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden animate-ls-slide-up" style={{ animationDelay: "40ms" }}>
+        <div
+          className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden animate-ls-slide-up"
+          style={{ animationDelay: "40ms" }}
+        >
           <div className="px-5 py-4 border-b border-border flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-foreground">Exercícios</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">Adicione os exercícios do treino.</p>
+              <h2 className="text-sm font-semibold text-foreground">
+                Exercícios
+              </h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Adicione os exercícios do treino.
+              </p>
             </div>
             <button
               onClick={addExercise}
@@ -196,8 +263,6 @@ export default function NewWorkout() {
           <div className="divide-y divide-border/60">
             {exercicios.map((ex, i) => (
               <div key={ex.id} className="p-5 flex flex-col gap-3">
-
-                {/* Número + remover */}
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-primary bg-primary/10 w-6 h-6 rounded-lg flex items-center justify-center">
                     {i + 1}
@@ -212,7 +277,6 @@ export default function NewWorkout() {
                   )}
                 </div>
 
-                {/* Nome */}
                 <input
                   type="text"
                   placeholder="Nome do exercício (ex: Supino Reto)"
@@ -221,46 +285,58 @@ export default function NewWorkout() {
                   className="ls-input"
                 />
 
-                {/* Séries, Reps, Descanso */}
                 <div className="grid grid-cols-3 gap-3">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Séries</label>
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Séries
+                    </label>
                     <input
                       type="number"
                       min={1}
                       value={ex.series}
-                      onChange={(e) => setExercise(i, "series", Number(e.target.value))}
+                      onChange={(e) =>
+                        setExercise(i, "series", Number(e.target.value))
+                      }
                       className="ls-input text-center"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Repetições</label>
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Repetições
+                    </label>
                     <input
                       type="text"
                       placeholder="12 ou 8-12"
                       value={ex.repeticoes}
-                      onChange={(e) => setExercise(i, "repeticoes", e.target.value)}
+                      onChange={(e) =>
+                        setExercise(i, "repeticoes", e.target.value)
+                      }
                       className="ls-input text-center"
                     />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">Descanso</label>
+                    <label className="text-xs font-medium text-muted-foreground">
+                      Descanso
+                    </label>
                     <input
                       type="text"
                       placeholder="60s"
                       value={ex.descanso}
-                      onChange={(e) => setExercise(i, "descanso", e.target.value)}
+                      onChange={(e) =>
+                        setExercise(i, "descanso", e.target.value)
+                      }
                       className="ls-input text-center"
                     />
                   </div>
                 </div>
 
-                {/* Observações */}
                 <input
                   type="text"
                   placeholder="Observações (opcional)"
                   value={ex.observacoes}
-                  onChange={(e) => setExercise(i, "observacoes", e.target.value)}
+                  onChange={(e) =>
+                    setExercise(i, "observacoes", e.target.value)
+                  }
                   className="ls-input"
                 />
               </div>
@@ -268,23 +344,31 @@ export default function NewWorkout() {
           </div>
         </div>
 
-        {/* Erro de validação */}
         {submitted && hasErrors && (
           <div className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 animate-ls-slide-up">
-            <p className="text-sm font-semibold text-red-700">Verifique os campos obrigatórios:</p>
+            <p className="text-sm font-semibold text-red-700">
+              Verifique os campos obrigatórios:
+            </p>
             <ul className="mt-1.5 flex flex-col gap-1">
-              {Object.entries(errors).filter(([, msg]) => msg).map(([field, msg]) => (
-                <li key={field} className="text-xs text-red-600 flex items-center gap-1.5">
-                  <span className="w-1 h-1 rounded-full bg-red-400 flex-shrink-0" />
-                  {msg}
-                </li>
-              ))}
+              {Object.entries(errors)
+                .filter(([, msg]) => msg)
+                .map(([field, msg]) => (
+                  <li
+                    key={field}
+                    className="text-xs text-red-600 flex items-center gap-1.5"
+                  >
+                    <span className="w-1 h-1 rounded-full bg-red-400 flex-shrink-0" />
+                    {msg}
+                  </li>
+                ))}
             </ul>
           </div>
         )}
 
-        {/* Ações */}
-        <div className="flex flex-col sm:flex-row gap-3 pb-8 animate-ls-slide-up" style={{ animationDelay: "80ms" }}>
+        <div
+          className="flex flex-col sm:flex-row gap-3 pb-8 animate-ls-slide-up"
+          style={{ animationDelay: "80ms" }}
+        >
           <button
             onClick={handleSubmit}
             className="sm:flex-1 h-12 rounded-xl bg-primary text-white text-sm font-semibold shadow-brand transition-all duration-200 hover:-translate-y-[1px] hover:shadow-[0_8px_24px_-4px_hsla(338,78%,50%,0.40)] active:translate-y-0 cursor-pointer select-none"
@@ -292,13 +376,12 @@ export default function NewWorkout() {
             Criar Treino
           </button>
           <button
-            onClick={() => navigate("/workouts")}
+            onClick={handleCancel}
             className="h-12 px-8 rounded-xl border border-border text-foreground text-sm font-semibold hover:bg-muted transition-colors cursor-pointer select-none"
           >
             Cancelar
           </button>
         </div>
-
       </div>
     </AppLayout>
   );

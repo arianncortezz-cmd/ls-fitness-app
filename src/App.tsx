@@ -14,9 +14,12 @@ import EditStudent from "@/pages/students/edit-student";
 import WorkoutsList from "@/pages/workouts/list";
 import WorkoutView from "@/pages/workouts/view";
 import NewWorkout from "@/pages/workouts/new";
+import WorkoutsByStudent from "@/pages/workouts/by-student";
+import LibraryList from "@/pages/Library/list";
 import NotFound from "@/pages/not-found";
 import { StudentsProvider } from "@/context/students-context";
 import { WorkoutsProvider } from "@/context/workouts-context";
+import { LibraryProvider } from "@/context/library-context";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,10 +40,13 @@ function Router() {
       <Route path="/students" component={StudentsList} />
       <Route path="/students/new" component={NewStudent} />
       <Route path="/students/:id/edit" component={EditStudent} />
+      <Route path="/students/:id/workouts/new" component={NewWorkout} />
+      <Route path="/students/:id/workouts" component={WorkoutsByStudent} />
       <Route path="/students/:id" component={StudentProfile} />
       <Route path="/workouts" component={WorkoutsList} />
       <Route path="/workouts/new" component={NewWorkout} />
       <Route path="/workouts/:id" component={WorkoutView} />
+      <Route path="/library" component={LibraryList} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -52,11 +58,13 @@ export default function App() {
       <TooltipProvider>
         <StudentsProvider>
           <WorkoutsProvider>
-            <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-              <Router />
-            </WouterRouter>
-            <Toaster />
-            <SonnerToaster position="top-right" richColors />
+            <LibraryProvider>
+              <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+                <Router />
+              </WouterRouter>
+              <Toaster />
+              <SonnerToaster position="top-right" richColors />
+            </LibraryProvider>
           </WorkoutsProvider>
         </StudentsProvider>
       </TooltipProvider>

@@ -18,33 +18,47 @@ export type NavItem = {
 };
 
 export const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard",     href: "/personal-dashboard" },
-  { icon: Users,           label: "Alunos",        href: "/students" },
-  { icon: Dumbbell,        label: "Treinos",       href: "/workouts" },
-  { icon: BookOpen,        label: "Biblioteca",    href: null },
-  { icon: TrendingUp,      label: "Evolução",      href: null },
-  { icon: CalendarDays,    label: "Agenda",        href: null },
-  { icon: Wallet,          label: "Financeiro",    href: null },
-  { icon: MessageCircle,   label: "Mensagens",     href: null },
-  { icon: Settings,        label: "Configurações", href: null },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/personal-dashboard" },
+  { icon: Users, label: "Alunos", href: "/students" },
+  { icon: Dumbbell, label: "Treinos", href: "/workouts" },
+  { icon: BookOpen, label: "Biblioteca", href: "/library" },
+  { icon: TrendingUp, label: "Evolução", href: null },
+  { icon: CalendarDays, label: "Agenda", href: null },
+  { icon: Wallet, label: "Financeiro", href: null },
+  { icon: MessageCircle, label: "Mensagens", href: null },
+  { icon: Settings, label: "Configurações", href: null },
 ];
 
 export type BreadcrumbItem = { label: string; href?: string };
 
 export function getBreadcrumbs(location: string): BreadcrumbItem[] {
-  const dash: BreadcrumbItem    = { label: "Dashboard", href: "/personal-dashboard" };
-  const alunos: BreadcrumbItem  = { label: "Alunos",    href: "/students" };
-  const treinos: BreadcrumbItem = { label: "Treinos",   href: "/workouts" };
+  const dash: BreadcrumbItem = {
+    label: "Dashboard",
+    href: "/personal-dashboard",
+  };
+  const alunos: BreadcrumbItem = { label: "Alunos", href: "/students" };
+  const treinos: BreadcrumbItem = { label: "Treinos", href: "/workouts" };
+  const biblioteca: BreadcrumbItem = { label: "Biblioteca", href: "/library" };
 
   if (location === "/personal-dashboard") return [{ label: "Dashboard" }];
-  if (location === "/students")           return [dash, { label: "Alunos" }];
-  if (location === "/students/new")       return [dash, alunos, { label: "Nova Aluna" }];
-  if (location === "/workouts")           return [dash, { label: "Treinos" }];
-  if (location === "/workouts/new")       return [dash, treinos, { label: "Novo Treino" }];
+  if (location === "/students") return [dash, { label: "Alunos" }];
+  if (location === "/students/new")
+    return [dash, alunos, { label: "Nova Aluna" }];
+  if (location === "/workouts") return [dash, { label: "Treinos" }];
+  if (location === "/workouts/new")
+    return [dash, treinos, { label: "Novo Treino" }];
+  if (location === "/library") return [dash, { label: "Biblioteca" }];
+  if (location === "/library/new")
+    return [dash, biblioteca, { label: "Novo Exercício" }];
 
   const editMatch = location.match(/^\/students\/([^/]+)\/edit$/);
   if (editMatch)
-    return [dash, alunos, { label: "Perfil", href: `/students/${editMatch[1]}` }, { label: "Editar" }];
+    return [
+      dash,
+      alunos,
+      { label: "Perfil", href: `/students/${editMatch[1]}` },
+      { label: "Editar" },
+    ];
 
   const profileMatch = location.match(/^\/students\/[^/]+$/);
   if (profileMatch) return [dash, alunos, { label: "Perfil" }];

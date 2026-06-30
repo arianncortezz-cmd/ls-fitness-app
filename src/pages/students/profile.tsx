@@ -1,9 +1,20 @@
 import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import {
-  Pencil, Dumbbell, TrendingUp, Image, Utensils, History,
-  Phone, CalendarDays, Target, CreditCard, AlertTriangle,
-  ClipboardList, FileText, Archive
+  Pencil,
+  Dumbbell,
+  TrendingUp,
+  Image,
+  Utensils,
+  History,
+  Phone,
+  CalendarDays,
+  Target,
+  CreditCard,
+  AlertTriangle,
+  ClipboardList,
+  FileText,
+  Archive,
 } from "lucide-react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { StudentAvatar } from "@/components/common/StudentAvatar";
@@ -12,7 +23,7 @@ import type { StudentStatus, StudentPlan } from "@/data/students";
 
 function StatusBadge({ status }: { status: StudentStatus }) {
   const styles: Record<StudentStatus, string> = {
-    Ativa:     "bg-emerald-50 text-emerald-700 border-emerald-200",
+    Ativa: "bg-emerald-50 text-emerald-700 border-emerald-200",
     Arquivada: "bg-slate-100  text-slate-500   border-slate-200",
   };
   return <span className={`ls-badge border ${styles[status]}`}>{status}</span>;
@@ -20,20 +31,12 @@ function StatusBadge({ status }: { status: StudentStatus }) {
 
 function PlanBadge({ plan }: { plan: StudentPlan }) {
   const styles: Record<StudentPlan, string> = {
-    Mensal:     "bg-slate-100  text-slate-600  border-slate-200",
+    Mensal: "bg-slate-100  text-slate-600  border-slate-200",
     Trimestral: "bg-amber-50   text-amber-700  border-amber-200",
-    Semestral:  "bg-violet-50  text-violet-700 border-violet-200",
+    Semestral: "bg-violet-50  text-violet-700 border-violet-200",
   };
   return <span className={`ls-badge border ${styles[plan]}`}>{plan}</span>;
 }
-
-const moduleButtons = [
-  { icon: Dumbbell,   label: "Treinos" },
-  { icon: TrendingUp, label: "Evolução" },
-  { icon: Image,      label: "Fotos" },
-  { icon: Utensils,   label: "Dieta" },
-  { icon: History,    label: "Histórico" },
-];
 
 export default function StudentProfile() {
   const { id } = useParams<{ id: string }>();
@@ -57,16 +60,31 @@ export default function StudentProfile() {
     navigate("/students");
   };
 
+  const moduleButtons = [
+    {
+      icon: Dumbbell,
+      label: "Treinos",
+      href: `/students/${student.id}/workouts`,
+    },
+    { icon: TrendingUp, label: "Evolução", href: null },
+    { icon: Image, label: "Fotos", href: null },
+    { icon: Utensils, label: "Dieta", href: null },
+    { icon: History, label: "Histórico", href: null },
+  ];
+
   return (
     <AppLayout>
       <div className="px-6 py-7 max-w-2xl mx-auto flex flex-col gap-5">
-
         {/* Profile card */}
         <div className="bg-white rounded-2xl border border-border shadow-sm p-6 flex flex-col items-center gap-4 text-center animate-ls-slide-up">
           <StudentAvatar student={student} size="lg" />
           <div>
-            <h1 className="text-[1.25rem] font-bold text-foreground tracking-[-0.02em]">{student.name}</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{student.username}</p>
+            <h1 className="text-[1.25rem] font-bold text-foreground tracking-[-0.02em]">
+              {student.name}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {student.username}
+            </p>
             <div className="flex items-center justify-center gap-2 mt-3">
               <StatusBadge status={student.status} />
               <PlanBadge plan={student.plan} />
@@ -82,21 +100,35 @@ export default function StudentProfile() {
         </div>
 
         {/* Info */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up" style={{ animationDelay: "40ms" }}>
-          <h3 className="text-sm font-semibold text-foreground mb-4">Informações</h3>
+        <div
+          className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up"
+          style={{ animationDelay: "40ms" }}
+        >
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            Informações
+          </h3>
           <div className="flex flex-col gap-3.5">
             {[
-              { icon: Phone,        label: "Telefone",          value: student.phone },
-              { icon: CalendarDays, label: "Início",            value: student.startDate },
-              { icon: CalendarDays, label: "Última avaliação",  value: student.lastAssessment },
-              { icon: CreditCard,   label: "Plano",             value: student.plan },
-              { icon: Target,       label: "Objetivos",         value: student.goals },
+              { icon: Phone, label: "Telefone", value: student.phone },
+              { icon: CalendarDays, label: "Início", value: student.startDate },
+              {
+                icon: CalendarDays,
+                label: "Última avaliação",
+                value: student.lastAssessment,
+              },
+              { icon: CreditCard, label: "Plano", value: student.plan },
+              { icon: Target, label: "Objetivos", value: student.goals },
             ].map(({ icon: Icon, label, value }) => (
               <div key={label} className="flex items-start gap-3">
-                <Icon className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                <Icon
+                  className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0"
+                  strokeWidth={1.75}
+                />
                 <div>
                   <p className="text-xs text-muted-foreground">{label}</p>
-                  <p className="text-sm font-medium text-foreground leading-relaxed">{value}</p>
+                  <p className="text-sm font-medium text-foreground leading-relaxed">
+                    {value}
+                  </p>
                 </div>
               </div>
             ))}
@@ -104,32 +136,54 @@ export default function StudentProfile() {
         </div>
 
         {/* Health */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up" style={{ animationDelay: "80ms" }}>
+        <div
+          className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up"
+          style={{ animationDelay: "80ms" }}
+        >
           <h3 className="text-sm font-semibold text-foreground mb-4">Saúde</h3>
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+              <AlertTriangle
+                className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0"
+                strokeWidth={1.75}
+              />
               <div>
-                <p className="text-xs text-muted-foreground mb-1">Observações médicas</p>
-                <p className="text-sm text-foreground leading-relaxed">{student.medicalObservations}</p>
+                <p className="text-xs text-muted-foreground mb-1">
+                  Observações médicas
+                </p>
+                <p className="text-sm text-foreground leading-relaxed">
+                  {student.medicalObservations}
+                </p>
               </div>
             </div>
             <div className="h-px bg-border" />
             <div className="flex items-start gap-3">
-              <ClipboardList className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+              <ClipboardList
+                className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0"
+                strokeWidth={1.75}
+              />
               <div>
                 <p className="text-xs text-muted-foreground mb-1">PAR-Q</p>
-                <p className="text-sm text-foreground leading-relaxed">{student.parq}</p>
+                <p className="text-sm text-foreground leading-relaxed">
+                  {student.parq}
+                </p>
               </div>
             </div>
             {student.notes && (
               <>
                 <div className="h-px bg-border" />
                 <div className="flex items-start gap-3">
-                  <FileText className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0" strokeWidth={1.75} />
+                  <FileText
+                    className="w-4 h-4 text-muted-foreground mt-0.5 flex-shrink-0"
+                    strokeWidth={1.75}
+                  />
                   <div>
-                    <p className="text-xs text-muted-foreground mb-1">Anotações</p>
-                    <p className="text-sm text-foreground leading-relaxed">{student.notes}</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Anotações
+                    </p>
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {student.notes}
+                    </p>
                   </div>
                 </div>
               </>
@@ -138,14 +192,24 @@ export default function StudentProfile() {
         </div>
 
         {/* Modules */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up" style={{ animationDelay: "120ms" }}>
-          <h3 className="text-sm font-semibold text-foreground mb-4">Módulos</h3>
+        <div
+          className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up"
+          style={{ animationDelay: "120ms" }}
+        >
+          <h3 className="text-sm font-semibold text-foreground mb-4">
+            Módulos
+          </h3>
           <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
-            {moduleButtons.map(({ icon: Icon, label }) => (
+            {moduleButtons.map(({ icon: Icon, label, href }) => (
               <button
                 key={label}
-                disabled
-                className="flex flex-col items-center gap-2 p-3 rounded-xl border border-border bg-surface text-muted-foreground opacity-50 cursor-not-allowed min-h-0"
+                disabled={!href}
+                onClick={() => href && navigate(href)}
+                className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-colors min-h-0 ${
+                  href
+                    ? "border-border bg-white text-foreground hover:border-primary/40 hover:bg-primary/4 cursor-pointer"
+                    : "border-border bg-surface text-muted-foreground opacity-50 cursor-not-allowed"
+                }`}
               >
                 <Icon className="w-5 h-5" strokeWidth={1.75} />
                 <span className="text-xs font-medium">{label}</span>
@@ -155,9 +219,16 @@ export default function StudentProfile() {
         </div>
 
         {/* Archive */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up" style={{ animationDelay: "160ms" }}>
-          <h3 className="text-sm font-semibold text-foreground mb-1">Zona de atenção</h3>
-          <p className="text-xs text-muted-foreground mb-4">Estas ações não podem ser desfeitas facilmente.</p>
+        <div
+          className="bg-white rounded-2xl border border-border shadow-sm p-5 animate-ls-slide-up"
+          style={{ animationDelay: "160ms" }}
+        >
+          <h3 className="text-sm font-semibold text-foreground mb-1">
+            Zona de atenção
+          </h3>
+          <p className="text-xs text-muted-foreground mb-4">
+            Estas ações não podem ser desfeitas facilmente.
+          </p>
 
           {!showArchiveConfirm ? (
             <button
@@ -170,11 +241,17 @@ export default function StudentProfile() {
           ) : (
             <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex flex-col gap-3">
               <div className="flex items-start gap-2.5">
-                <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" strokeWidth={1.75} />
+                <AlertTriangle
+                  className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"
+                  strokeWidth={1.75}
+                />
                 <div>
-                  <p className="text-sm font-semibold text-amber-800">Confirmar arquivamento</p>
+                  <p className="text-sm font-semibold text-amber-800">
+                    Confirmar arquivamento
+                  </p>
                   <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
-                    <strong>{student.name}</strong> será arquivada e não aparecerá na lista ativa. Você poderá reativá-la depois.
+                    <strong>{student.name}</strong> será arquivada e não
+                    aparecerá na lista ativa. Você poderá reativá-la depois.
                   </p>
                 </div>
               </div>
