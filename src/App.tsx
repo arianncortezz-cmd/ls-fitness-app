@@ -21,12 +21,14 @@ import LibraryList from "@/pages/Library/list";
 import NewLibraryExercise from "@/pages/Library/new";
 import Schedule from "@/pages/schedule/index";
 import NewScheduleEvent from "@/pages/schedule/new";
+import Finance from "@/pages/finance/index";
 import NotFound from "@/pages/not-found";
 import { StudentsProvider } from "@/context/students-context";
 import { WorkoutsProvider } from "@/context/workouts-context";
 import { LibraryProvider } from "@/context/library-context";
 import { AssessmentsProvider } from "@/context/assessments-context";
 import { ScheduleProvider } from "@/context/schedule-context";
+import { PaymentsProvider } from "@/context/payments-context";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,6 +61,7 @@ function Router() {
       <Route path="/library" component={LibraryList} />
       <Route path="/schedule/new" component={NewScheduleEvent} />
       <Route path="/schedule" component={Schedule} />
+      <Route path="/finance" component={Finance} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -73,13 +76,15 @@ export default function App() {
             <LibraryProvider>
               <AssessmentsProvider>
                 <ScheduleProvider>
-                  <WouterRouter
-                    base={import.meta.env.BASE_URL.replace(/\/$/, "")}
-                  >
-                    <Router />
-                  </WouterRouter>
-                  <Toaster />
-                  <SonnerToaster position="top-right" richColors />
+                  <PaymentsProvider>
+                    <WouterRouter
+                      base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+                    >
+                      <Router />
+                    </WouterRouter>
+                    <Toaster />
+                    <SonnerToaster position="top-right" richColors />
+                  </PaymentsProvider>
                 </ScheduleProvider>
               </AssessmentsProvider>
             </LibraryProvider>

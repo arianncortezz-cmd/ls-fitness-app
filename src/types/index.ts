@@ -19,22 +19,22 @@ export type LibraryExercise = {
 // ─── Progresso Físico ─────────────────────────────────────────────────────────
 
 export type Medidas = {
-  cintura: string;
-  quadril: string;
-  bracoDireito: string;
+  cintura:       string;
+  quadril:       string;
+  bracoDireito:  string;
   bracoEsquerdo: string;
-  coxaDireita: string;
-  coxaEsquerda: string;
+  coxaDireita:   string;
+  coxaEsquerda:  string;
 };
 
 export type Avaliacao = {
-  id: string;
-  studentId: string;
-  data: string;
-  peso: string;
-  altura: string;
-  imc: string;
-  medidas: Medidas;
+  id:          string;
+  studentId:   string;
+  data:        string;
+  peso:        string;
+  altura:      string;
+  imc:         string;
+  medidas:     Medidas;
   observacoes: string;
 };
 
@@ -43,12 +43,26 @@ export type Avaliacao = {
 export type EventoTipo = "treino" | "avaliacao" | "lembrete";
 
 export type Evento = {
-  id: string;
-  titulo: string;
-  tipo: EventoTipo;
-  studentId: string;
-  data: string; // "YYYY-MM-DD"
-  horarioInicio: string; // "HH:MM"
-  horarioFim: string; // "HH:MM"
-  observacoes: string;
+  id:             string;
+  titulo:         string;
+  tipo:           EventoTipo;
+  studentId:      string;
+  data:           string;
+  horarioInicio:  string;
+  horarioFim:     string;
+  observacoes:    string;
+};
+
+// ─── Financeiro ───────────────────────────────────────────────────────────────
+
+export type PagamentoStatus = "pago" | "pendente" | "atrasado";
+
+export type Pagamento = {
+  id:             string;
+  studentId:      string;
+  mes:            string;  // "YYYY-MM"
+  valor:          number;
+  status:         PagamentoStatus;
+  dataPagamento:  string;
+  observacoes:    string;
 };
