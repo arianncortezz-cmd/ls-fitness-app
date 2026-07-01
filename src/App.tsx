@@ -19,11 +19,14 @@ import NewWorkout from "@/pages/workouts/new";
 import WorkoutsByStudent from "@/pages/workouts/by-student";
 import LibraryList from "@/pages/Library/list";
 import NewLibraryExercise from "@/pages/Library/new";
+import Schedule from "@/pages/schedule/index";
+import NewScheduleEvent from "@/pages/schedule/new";
 import NotFound from "@/pages/not-found";
 import { StudentsProvider } from "@/context/students-context";
 import { WorkoutsProvider } from "@/context/workouts-context";
 import { LibraryProvider } from "@/context/library-context";
 import { AssessmentsProvider } from "@/context/assessments-context";
+import { ScheduleProvider } from "@/context/schedule-context";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +57,8 @@ function Router() {
       <Route path="/workouts/:id" component={WorkoutView} />
       <Route path="/library/new" component={NewLibraryExercise} />
       <Route path="/library" component={LibraryList} />
+      <Route path="/schedule/new" component={NewScheduleEvent} />
+      <Route path="/schedule" component={Schedule} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -67,13 +72,15 @@ export default function App() {
           <WorkoutsProvider>
             <LibraryProvider>
               <AssessmentsProvider>
-                <WouterRouter
-                  base={import.meta.env.BASE_URL.replace(/\/$/, "")}
-                >
-                  <Router />
-                </WouterRouter>
-                <Toaster />
-                <SonnerToaster position="top-right" richColors />
+                <ScheduleProvider>
+                  <WouterRouter
+                    base={import.meta.env.BASE_URL.replace(/\/$/, "")}
+                  >
+                    <Router />
+                  </WouterRouter>
+                  <Toaster />
+                  <SonnerToaster position="top-right" richColors />
+                </ScheduleProvider>
               </AssessmentsProvider>
             </LibraryProvider>
           </WorkoutsProvider>

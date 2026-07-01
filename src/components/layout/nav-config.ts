@@ -23,7 +23,7 @@ export const navItems: NavItem[] = [
   { icon: Dumbbell, label: "Treinos", href: "/workouts" },
   { icon: BookOpen, label: "Biblioteca", href: "/library" },
   { icon: TrendingUp, label: "Evolução", href: null },
-  { icon: CalendarDays, label: "Agenda", href: null },
+  { icon: CalendarDays, label: "Agenda", href: "/schedule" },
   { icon: Wallet, label: "Financeiro", href: null },
   { icon: MessageCircle, label: "Mensagens", href: null },
   { icon: Settings, label: "Configurações", href: null },
@@ -39,6 +39,7 @@ export function getBreadcrumbs(location: string): BreadcrumbItem[] {
   const alunos: BreadcrumbItem = { label: "Alunos", href: "/students" };
   const treinos: BreadcrumbItem = { label: "Treinos", href: "/workouts" };
   const biblioteca: BreadcrumbItem = { label: "Biblioteca", href: "/library" };
+  const agenda: BreadcrumbItem = { label: "Agenda", href: "/schedule" };
 
   if (location === "/personal-dashboard") return [{ label: "Dashboard" }];
   if (location === "/students") return [dash, { label: "Alunos" }];
@@ -50,6 +51,9 @@ export function getBreadcrumbs(location: string): BreadcrumbItem[] {
   if (location === "/library") return [dash, { label: "Biblioteca" }];
   if (location === "/library/new")
     return [dash, biblioteca, { label: "Novo Exercício" }];
+  if (location === "/schedule") return [dash, { label: "Agenda" }];
+  if (location === "/schedule/new")
+    return [dash, agenda, { label: "Novo Evento" }];
 
   const editMatch = location.match(/^\/students\/([^/]+)\/edit$/);
   if (editMatch)

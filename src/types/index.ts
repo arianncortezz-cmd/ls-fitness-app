@@ -37,3 +37,18 @@ export type Avaliacao = {
   medidas: Medidas;
   observacoes: string;
 };
+
+// ─── Agenda ───────────────────────────────────────────────────────────────────
+
+export type EventoTipo = "treino" | "avaliacao" | "lembrete";
+
+export type Evento = {
+  id: string;
+  titulo: string;
+  tipo: EventoTipo;
+  studentId: string;
+  data: string; // "YYYY-MM-DD"
+  horarioInicio: string; // "HH:MM"
+  horarioFim: string; // "HH:MM"
+  observacoes: string;
+};
